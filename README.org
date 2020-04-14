@@ -36,7 +36,7 @@
     (prefer-coding-system 'utf-8)
 
     ;; define the font family and size
-    (set-frame-font "PragmataPro-13" nil t)
+    (set-frame-font "PragmataPro-14" nil t)
     (setq prettify-symbols-unprettify-at-point 'right-edge)
 
     ;; Load pragmatapro-lig.el
@@ -115,13 +115,13 @@
       (package-install 'use-package))
   #+end_src
 * THEMING
-  #+begin_src emacs-lisp
+   #+begin_src emacs-lisp
     (use-package doom-themes
       :ensure t
       :config
       (setq doom-themes-enable-bold nil
 	    doom-themes-enable-italic nil)
-      (load-theme 'doom-city-lights t)
+      (load-theme 'doom-peacock t)
       (doom-themes-visual-bell-config)
       (doom-themes-org-config))
 
@@ -136,6 +136,7 @@
     (use-package all-the-icons
       :ensure t
       :config (setq inhibit-compacting-font-caches t))
+  #+end_src
   #+end_src
 * OTHER DEFAULTS
    #+begin_src emacs-lisp
@@ -174,7 +175,7 @@
     :ensure t
     :config
     (beacon-mode t)
-    (setq beacon-color "#0057FF"))
+    (setq beacon-color "#FB0320"))
 #+end_src
 * WHICH-KEY
   #+begin_src emacs-lisp
@@ -377,24 +378,22 @@
 	  pwd)))
 
     (setq eshell-prompt-function
-	  (lambda nil
-	    (concat
-	     (propertize "\n" 'face nil)
-	     (propertize (fill-window-with-char) 'face '(:background "#181F25"))
-	     (propertize "╭⟢" 'face '(:foreground "#A2DEB2"))
-	     (propertize " " 'face nil)
-	     (propertize (user-login-name) 'face '(:foreground "#5DC078"))
-	     (propertize "@" 'face '(:foreground "#0057FF"))
-	     (propertize (system-name) 'face '(:foreground "#0083FF"))
-	     (propertize " ⯌ " 'face nil)
-	     (propertize "￨" 'face '(:foreground "#74CAFF"))
-	     (propertize (pwd-shorten-dirs (abbreviate-file-name (eshell/pwd)))
-			 'face '(:foreground "#74CAFF"))
-	     (propertize " ⯌ " 'face nil)
-	     (propertize (display-git-prompt-branch) 'face '(:foreground "#A2DEB2"))
-	     (propertize "\n" 'face nil)
-	     (propertize "╰🡢" 'face '(:foreground "#A2DEB2"))
-	     (propertize " " 'face nil))))
+      (lambda nil
+        (concat
+         (propertize (make-string (window-body-width) ?─) 'face '(:foreground "#234768"))
+         (propertize "\n" 'face nil)
+         (propertize "╭⟢ " 'face '(:foreground "#FFDDD8"))
+         (propertize (user-login-name) 'face '(:foreground "#FF85728"))
+         (propertize "@" 'face '(:foreground "#FB0320F"))
+         (propertize (system-name) 'face '(:foreground "#FFDDD"))
+         (propertize " " 'face nil)
+         (propertize (display-git-prompt-branch) 'face '(:foreground "#F1F5F9")) ""
+         (propertize " ⯌ " 'face nil)
+         (propertize (pwd-shorten-dirs (abbreviate-file-name (eshell/pwd)))
+                     'face '(:foreground "#74CAFF"))
+         (propertize "\n" 'face nil)
+         (propertize "╰🡢" 'face '(:foreground "#FFDDD8"))
+         (propertize " " 'face nil))))
 
     (setq eshell-highlight-prompt nil)
 
@@ -477,10 +476,6 @@
       :ensure t
       :config (progn (show-smartparens-global-mode t))
       :hook (prog-mode . turn-on-smartparens-mode))
-
-    (use-package rainbow-delimiters
-      :ensure t
-      :hook (prog-mode . rainbow-delimiters-mode))
 
     (use-package highlight-indent-guides
       :ensure t
@@ -614,6 +609,16 @@
        :ensure t
        :init (add-hook 'js2-mode-hook 'prettier-js-mode))
    #+end_src
+* MARKDOWN
+   #+begin_src emacs-lisp
+     (use-package markdown-mode
+       :ensure t
+       :commands (markdown-mode gfm-mode)
+       :mode (("README\\.md\\'" . gfm-mode)
+	     ("\\.md\\'" . markdown-mode)
+	     ("\\.markdown\\'" . markdown-mode))
+       :init (setq markdown-command "multimarkdown"))
+   #+end_src
 * CLI CLIENTS
 ** GIT
    #+begin_src emacs-lisp
@@ -647,6 +652,7 @@
 	 (unless (file-exists-p custom-file)
 	   (write-region "" "" custom-file))
 	 (load custom-file))))
+  
   #+end_src
 * REDUCE GARBAGE COLLECTION
   #+begin_src emacs-lisp
