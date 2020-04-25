@@ -44,13 +44,13 @@
     (require 'pragmatapro-lig)
     (pragmatapro-lig-global-mode)
 
-    (global-prettify-symbols-mode +1)
+    (global-prettify-symbols-mode t)
   #+end_src
 * FRAME POSITIONING
   #+begin_src emacs-lisp
     (defun set-initial-frame ()
       "Defines and center the frame window"
-      (let* ((base-factor 0.72)
+      (let* ((base-factor 0.34)
 	     (a-width (* (display-pixel-width) base-factor))
 	     (a-height (* (display-pixel-height) base-factor))
 	     (a-left (truncate (/ (- (display-pixel-width) a-width) 2)))
@@ -115,7 +115,7 @@
       (package-install 'use-package))
   #+end_src
 * THEMING
-   #+begin_src emacs-lisp
+  #+begin_src emacs-lisp
     (use-package doom-themes
       :ensure t
       :config
@@ -136,7 +136,6 @@
     (use-package all-the-icons
       :ensure t
       :config (setq inhibit-compacting-font-caches t))
-  #+end_src
   #+end_src
 * OTHER DEFAULTS
    #+begin_src emacs-lisp
@@ -365,7 +364,7 @@
 
     (defun fill-window-with-char ()
       "Fill the window width with one character acting as a line."
-      (make-string (window-body-width) ? ))
+      (concat (make-string (- (window-body-width) 1) ? ) "\n"))
 
     (defun pwd-shorten-dirs (pwd)
       "Shorten all directory names in PWD except the last two."
@@ -377,23 +376,23 @@
 	     (mapconcat (lambda (item) item) (last path-items 2) "/"))
 	  pwd)))
 
-    (setq eshell-prompt-function
-      (lambda nil
-        (concat
-         (propertize (make-string (window-body-width) ?─) 'face '(:foreground "#234768"))
-         (propertize "\n" 'face nil)
-         (propertize "╭⟢ " 'face '(:foreground "#FFDDD8"))
-         (propertize (user-login-name) 'face '(:foreground "#FF85728"))
-         (propertize "@" 'face '(:foreground "#FB0320F"))
-         (propertize (system-name) 'face '(:foreground "#FFDDD"))
-         (propertize " " 'face nil)
-         (propertize (display-git-prompt-branch) 'face '(:foreground "#F1F5F9")) ""
-         (propertize " ⯌ " 'face nil)
-         (propertize (pwd-shorten-dirs (abbreviate-file-name (eshell/pwd)))
-                     'face '(:foreground "#74CAFF"))
-         (propertize "\n" 'face nil)
-         (propertize "╰🡢" 'face '(:foreground "#FFDDD8"))
-         (propertize " " 'face nil))))
+   (setq eshell-prompt-function
+     (lambda nil
+       (concat
+        (propertize (make-string (window-body-width) ?─) 'face '(:foreground "#234768"))
+        (propertize "\n" 'face nil)
+        (propertize "╭⟢ " 'face '(:foreground "#FFDDD8"))
+        (propertize (user-login-name) 'face '(:foreground "#FF85728"))
+        (propertize "@" 'face '(:foreground "#FB0320F"))
+        (propertize (system-name) 'face '(:foreground "#FFDDD"))
+        (propertize " " 'face nil)
+        (propertize (display-git-prompt-branch) 'face '(:foreground "#F1F5F9")) ""
+        (propertize " ⯌ " 'face nil)
+        (propertize (pwd-shorten-dirs (abbreviate-file-name (eshell/pwd)))
+                    'face '(:foreground "#74CAFF"))
+        (propertize "\n" 'face nil)
+        (propertize "╰🡢" 'face '(:foreground "#FFDDD8"))
+        (propertize " " 'face nil))))
 
     (setq eshell-highlight-prompt nil)
 
@@ -476,6 +475,10 @@
       :ensure t
       :config (progn (show-smartparens-global-mode t))
       :hook (prog-mode . turn-on-smartparens-mode))
+
+    ;; (use-package rainbow-delimiters
+    ;;   :ensure t
+    ;;   :hook (prog-mode . rainbow-delimiters-mode))
 
     (use-package highlight-indent-guides
       :ensure t
@@ -607,17 +610,10 @@
 
      (use-package prettier-js
        :ensure t
-       :init (add-hook 'js2-mode-hook 'prettier-js-mode))
-   #+end_src
-* MARKDOWN
-   #+begin_src emacs-lisp
-     (use-package markdown-mode
-       :ensure t
-       :commands (markdown-mode gfm-mode)
-       :mode (("README\\.md\\'" . gfm-mode)
-	     ("\\.md\\'" . markdown-mode)
-	     ("\\.markdown\\'" . markdown-mode))
-       :init (setq markdown-command "multimarkdown"))
+       :after js2-mode
+       :init 
+       (add-hook 'js2-mode-hook 'prettier-js-mode))
+       (add-hook 'web-mode-hook 'prettier-js-mode)
    #+end_src
 * CLI CLIENTS
 ** GIT
@@ -652,7 +648,6 @@
 	 (unless (file-exists-p custom-file)
 	   (write-region "" "" custom-file))
 	 (load custom-file))))
-  
   #+end_src
 * REDUCE GARBAGE COLLECTION
   #+begin_src emacs-lisp
